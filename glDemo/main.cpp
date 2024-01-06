@@ -31,6 +31,8 @@ CGPrincipleAxes* principleAxes = nullptr;
 AIMesh* characterMesh = nullptr;
 AIMesh* floorMesh = nullptr;
 AIMesh* houseMesh = nullptr;
+AIMesh* structureMesh = nullptr;
+AIMesh* rockMesh = nullptr;
 
 //Configures window height + width
 const unsigned int initWidth = 512;
@@ -110,7 +112,7 @@ int main() {
 
 	
 	//Sets position of camera
-	mainCamera = new ArcballCamera(-30.0f, -50.0f, 100.0f, 55.0f, 1.0f, 0.1f, 10000.0f);
+	mainCamera = new ArcballCamera(-30.0f, -50.0f, 100.0f, 80.0f, 1.0f, 0.1f, 1000000.0f);
 	
 	//adds positional axes
 	principleAxes = new CGPrincipleAxes();
@@ -132,6 +134,18 @@ int main() {
 	if (houseMesh) {
 		houseMesh->addTexture(string("Assets\\house\\house_texture.bmp"), FIF_BMP);//adds bitmap texture to model
 	}
+
+	//Adds new mesh, searches for model (.obj) file
+	structureMesh = new AIMesh(string("Assets\\house\\bighouse.obj"));
+	if (structureMesh) {
+		structureMesh->addTexture(string("Assets\\house\\bighouse_texture.bmp"), FIF_BMP);//adds bitmap texture to model
+	}
+
+	rockMesh = new AIMesh(string("Assets\\terrain\\rock.obj"));
+	if (rockMesh) {
+		rockMesh->addTexture(string("Assets\\terrain\\rock_texture.bmp"), FIF_BMP);//adds bitmap texture to model
+	}
+
 
 
 	while (!glfwWindowShouldClose(window)) {
@@ -203,7 +217,29 @@ void renderScene()
 		houseMesh->render(); //render house on screen
 		houseMesh->postRender(); //remove house data from stage
 	}
+
+
+	if (structureMesh) {
+
+		mat4 structureTranslate = translate(identity<mat4>(), vec3(10.0f, 7.0f, -40.0f)); //house translation
+		mat4 S = cameraTransform * structureTranslate;
+		glLoadMatrixf((GLfloat*)&S); //load camera transformation and house translation
+
+		structureMesh->preRender(); //get house ready
+		structureMesh->render(); //render house on screen
+		structureMesh->postRender(); //remove house data from stage
+	}
 	
+	if (rockMesh) {
+
+		mat4 rockTranslate = translate(identity<mat4>(), vec3(-20.0f, 5.0f, 20.0f)); //rock translation
+		mat4 R = cameraTransform * rockTranslate;
+		glLoadMatrixf((GLfloat*)&R); //load camera transformation and rock translation
+
+		rockMesh->preRender(); //get rock ready
+		rockMesh->render(); //render rock on screen
+		rockMesh->postRender(); //remove rocke data from stage
+	}
 #endif
 
 }
