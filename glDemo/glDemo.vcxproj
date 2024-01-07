@@ -163,6 +163,11 @@
     <ClCompile Include="TextureQuad.cpp" />
     <ClCompile Include="TileMap.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="basic_shader.frag" />
+    <None Include="basic_texture.frag" />
+    <None Include="texture-directional.frag" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

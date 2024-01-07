@@ -10,6 +10,25 @@
 using namespace std;
 using namespace glm;
 
+/*
+struct DirectionalLight {
+
+	vec3 direction;
+	vec3 colour;
+
+	DirectionalLight() {
+
+		direction = vec3(0.0f, 1.0f, 0.0f); // default to point upwards
+		colour = vec3(1.0f, 1.0f, 1.0f);
+	}
+
+	DirectionalLight(vec3 direction, vec3 colour = vec3(1.0f, 1.0f, 1.0f)) {
+
+		this->direction = direction;
+		this->colour = colour;
+	}
+};
+*/
 
 //variables that will be either set or changed
 #pragma region Global variables
@@ -19,6 +38,9 @@ GUClock* gameClock = nullptr;
 
 //Initialises camera
 ArcballCamera* mainCamera = nullptr;
+
+
+
 
 // Mouse tracking for camera
 bool				mouseDown = false;
@@ -43,6 +65,17 @@ int positionx = 0.0f;
 int positiony = 10.0f;
 int positionz = 0.0f;
 
+GLuint				texDirLightShader;
+GLint				texDirLightShader_modelMatrix;
+GLint				texDirLightShader_viewMatrix;
+GLint				texDirLightShader_projMatrix;
+GLint				texDirLightShader_texture;
+GLint				texDirLightShader_lightDirection;
+GLint				texDirLightShader_lightColour;
+
+//float directLightTheta = 0.0f;
+//DirectionalLight directLight = DirectionalLight(vec3(cosf(directLightTheta), sinf(directLightTheta), 0.0f));
+
 #pragma endregion
 
 //initialising functions for later calls
@@ -52,7 +85,9 @@ void renderScene();
 void updateScene();
 void resizeWindow(GLFWwindow* window, int width, int height);
 void keyboardHandler(GLFWwindow* window, int key, int scancode, int action, int mods);
+void renderWithDirectionalLight();
 #pragma endregion
+
 
 
 //main
@@ -146,7 +181,17 @@ int main() {
 		rockMesh->addTexture(string("Assets\\terrain\\rock_texture.bmp"), FIF_BMP);//adds bitmap texture to model
 	}
 
+	/*
+	texDirLightShader = setupShaders(string("Assets\\Shaders\\texture-directional.vert"), NULL, NULL);
 
+
+	texDirLightShader_modelMatrix = glGetUniformLocation(texDirLightShader, "modelMatrix");
+	texDirLightShader_viewMatrix = glGetUniformLocation(texDirLightShader, "viewMatrix");
+	texDirLightShader_projMatrix = glGetUniformLocation(texDirLightShader, "projMatrix");
+	texDirLightShader_texture = glGetUniformLocation(texDirLightShader, "texture");
+	texDirLightShader_lightDirection = glGetUniformLocation(texDirLightShader, "lightDirection");
+	texDirLightShader_lightColour = glGetUniformLocation(texDirLightShader, "lightColour");
+	*/
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -242,19 +287,50 @@ void renderScene()
 	}
 #endif
 
+
 }
+/*void renderWithDirectionalLight() {
+
+	// Clear the rendering window
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Get camera matrices
+	mat4 cameraProjection = mainCamera->projectionTransform();
+
+	// Plug-in texture-directional light shader and setup relevant uniform variables
+	// (keep this shader for all textured objects affected by the light source)
+	glUseProgram(texDirLightShader);
+
+	glUniformMatrix4fv(texDirLightShader_projMatrix, 1, GL_FALSE, (GLfloat*)&cameraProjection);
+	glUniform1i(texDirLightShader_texture, 0); // set to point to texture unit 0 for AIMeshes
+	glUniform3fv(texDirLightShader_lightDirection, 1, (GLfloat*)&(directLight.direction));
+	glUniform3fv(texDirLightShader_lightColour, 1, (GLfloat*)&(directLight.colour));
+
+	if (floorMesh) {
+
+		mat4 modelTransform = glm::scale(identity<mat4>(), vec3(10.0f, 1.0f, 10.0f));
+
+		glUniformMatrix4fv(texDirLightShader_modelMatrix, 1, GL_FALSE, (GLfloat*)&modelTransform);
+
+		floorMesh->preRender();
+		floorMesh->render();
+		floorMesh->postRender();
+	}
+
+}*/
+
 
 //updateScene - simulate time and animate renders on screen
-void updateScene() {
+	void updateScene() {
 
-	float tDelta = 0.0f;
+		float tDelta = 0.0f;
 
-	if (gameClock) {
+		if (gameClock) {
 
-		gameClock->tick();
-		tDelta = (float)gameClock->gameTimeDelta();
+			gameClock->tick();
+			tDelta = (float)gameClock->gameTimeDelta();
+		}
 	}
-}
 
 //resizeWindow - allows window to be resizable and for the camera to follow along with it (if screen gets wider, camera will have a wider perspective)
 void resizeWindow(GLFWwindow* window, int width, int height)
@@ -266,6 +342,8 @@ void resizeWindow(GLFWwindow* window, int width, int height)
 
 	glViewport(0, 0, width, height);		// Draw into entire window
 }
+
+
 
 //keyboardHandler - checks for keyboard inputs
 void keyboardHandler(GLFWwindow* window, int key, int scancode, int action, int mods)

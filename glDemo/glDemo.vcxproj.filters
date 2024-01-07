@@ -87,4 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="basic_shader.frag" />
+    <None Include="basic_texture.frag" />
+    <None Include="texture-directional.frag" />
+  </ItemGroup>
 </Project>
