@@ -85,7 +85,8 @@ void renderScene();
 void updateScene();
 void resizeWindow(GLFWwindow* window, int width, int height);
 void keyboardHandler(GLFWwindow* window, int key, int scancode, int action, int mods);
-void renderWithDirectionalLight();
+//void renderWithDirectionalLight();
+void cameraZoom(GLFWwindow* window, double xoffset, double yoffset);
 #pragma endregion
 
 
@@ -121,6 +122,7 @@ int main() {
 
 	glfwSetFramebufferSizeCallback(window, resizeWindow); //Makes window resizable
 	glfwSetKeyCallback(window, keyboardHandler); //Initialises keyboard handler to check for keys
+	glfwSetScrollCallback(window, cameraZoom);
 
 	//Initialise glew
 	glewInit();
@@ -388,4 +390,19 @@ void keyboardHandler(GLFWwindow* window, int key, int scancode, int action, int 
 			}
 		}
 	}
+}
+
+
+void cameraZoom(GLFWwindow* window, double xoffset, double yoffset) {
+
+	if (mainCamera) {
+
+		if (yoffset < 0.0)
+			mainCamera->scaleRadius(1.1f);
+		else if (yoffset > 0.0)
+			mainCamera->scaleRadius(0.9f);
+	}
+}
+
+void mouseEnterHandler(GLFWwindow* window, int entered) {
 }
